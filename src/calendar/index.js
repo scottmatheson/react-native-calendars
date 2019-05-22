@@ -61,6 +61,8 @@ class Calendar extends Component {
     onVisibleMonthsChange: PropTypes.func,
     // Replace default arrows with custom ones (direction can be 'left' or 'right')
     renderArrow: PropTypes.func,
+    // Replace default arrows with custom ones (direction can be 'left' or 'right')
+    renderDoubleArrow: PropTypes.func,
     // Provide custom day rendering component
     dayComponent: PropTypes.any,
     // Month format in calendar title. Formatting values: http://arshaw.com/xdate/#Formatting
@@ -76,7 +78,11 @@ class Calendar extends Component {
     // Handler which gets executed when press arrow icon left. It receive a callback can go back month
     onPressArrowLeft: PropTypes.func,
     // Handler which gets executed when press arrow icon left. It receive a callback can go next month
-    onPressArrowRight: PropTypes.func
+    onPressArrowRight: PropTypes.func,
+    // Handler which gets executed when press double-arrow icon left. It receive a callback can go back month
+    onPressDoubleArrowLeft: PropTypes.func,
+    // Handler which gets executed when press double-arrow icon left. It receive a callback can go next month
+    onPressDoubleArrowRight: PropTypes.func
   };
 
   constructor(props) {
@@ -266,11 +272,14 @@ class Calendar extends Component {
           showIndicator={indicator}
           firstDay={this.props.firstDay}
           renderArrow={this.props.renderArrow}
+          renderDoubleArrow={this.props.renderDoubleArrow}
           monthFormat={this.props.monthFormat}
           hideDayNames={this.props.hideDayNames}
           weekNumbers={this.props.showWeekNumbers}
           onPressArrowLeft={this.props.onPressArrowLeft}
           onPressArrowRight={this.props.onPressArrowRight}
+          onPressDoubleArrowLeft={this.props.onPressDoubleArrowLeft}
+          onPressDoubleArrowRight={this.props.onPressDoubleArrowRight}
         />
         <View style={this.style.monthView}>{weeks}</View>
       </View>);

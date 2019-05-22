@@ -7,7 +7,9 @@ import styleConstructor from './style';
 import { weekDayNames } from '../../dateutils';
 import {
   CHANGE_MONTH_LEFT_ARROW,
-  CHANGE_MONTH_RIGHT_ARROW
+  CHANGE_MONTH_RIGHT_ARROW,
+  CHANGE_MONTH_LEFT_DOUBLE_ARROW,
+  CHANGE_MONTH_RIGHT_DOUBLE_ARROW
 } from '../../testIDs';
 
 class CalendarHeader extends Component {
@@ -19,10 +21,13 @@ class CalendarHeader extends Component {
     showIndicator: PropTypes.bool,
     firstDay: PropTypes.number,
     renderArrow: PropTypes.func,
+    renderDoubleArrow: PropTypes.func,
     hideDayNames: PropTypes.bool,
     weekNumbers: PropTypes.bool,
     onPressArrowLeft: PropTypes.func,
-    onPressArrowRight: PropTypes.func
+    onPressArrowRight: PropTypes.func,
+    onPressDoubleArrowLeft: PropTypes.func,
+    onPressDoubleArrowRight: PropTypes.func
   };
 
   static defaultProps = {
@@ -36,6 +41,10 @@ class CalendarHeader extends Component {
     this.substractMonth = this.substractMonth.bind(this);
     this.onPressLeft = this.onPressLeft.bind(this);
     this.onPressRight = this.onPressRight.bind(this);
+    this.addYear = this.addYear.bind(this);
+    this.substractYear = this.substractYear.bind(this);
+    this.onPressDoubleLeft = this.onPressDoubleLeft.bind(this);
+    this.onPressDoubleRight = this.onPressDoubleRight.bind(this);
   }
 
   addMonth() {
@@ -44,6 +53,14 @@ class CalendarHeader extends Component {
 
   substractMonth() {
     this.props.addMonth(-1);
+  }
+
+  addYear() {
+    this.props.addMonth(12);
+  }
+
+  substractYear() {
+    this.props.addMonth(-12);
   }
 
   shouldComponentUpdate(nextProps) {
@@ -78,9 +95,27 @@ class CalendarHeader extends Component {
     return this.addMonth();
   }
 
+  onPressDoubleLeft() {
+    const {onPressDoubleArrowLeft} = this.props;
+    if(typeof onPressDoubleArrowLeft === 'function') {
+      return onPressDoubleArrowLeft(this.substractYear);
+    }
+    return this.substractYear();
+  }
+
+  onPressDoubleRight() {
+    const {onPressDoubleArrowRight} = this.props;
+    if(typeof onPressDoubleArrowRight === 'function') {
+      return onPressDoubleArrowRight(this.addYear);
+    }
+    return this.addYear();
+  }
+
   render() {
     let leftArrow = <View />;
     let rightArrow = <View />;
+    let leftDoubleArrow = <View />;
+    let rightDoubleArrow = <View />;
     let weekDaysNames = weekDayNames(this.props.firstDay);
     if (!this.props.hideArrows) {
       leftArrow = (
@@ -113,6 +148,36 @@ class CalendarHeader extends Component {
               />}
         </TouchableOpacity>
       );
+      leftDoubleArrow = (
+        <TouchableOpacity
+          onPress={this.onPressDoubleLeft}
+          style={this.style.arrow}
+          hitSlop={{left: 20, right: 20, top: 20, bottom: 20}}
+          testID={CHANGE_MONTH_LEFT_DOUBLE_ARROW}
+        >
+          {this.props.renderDoubleArrow
+            ? this.props.renderDoubleArrow('left')
+            : <Image
+              source={require('../img/previousprevious.png')}
+              style={this.style.arrowImage}
+            />}
+        </TouchableOpacity>
+      );
+      rightDoubleArrow = (
+        <TouchableOpacity
+          onPress={this.onPressDoubleRight}
+          style={this.style.arrow}
+          hitSlop={{left: 20, right: 20, top: 20, bottom: 20}}
+          testID={CHANGE_MONTH_RIGHT_DOUBLE_ARROW}
+        >
+          {this.props.renderDoubleArrow
+            ? this.props.renderDoubleArrow('right')
+            : <Image
+              source={require('../img/nextnext.png')}
+              style={this.style.arrowImage}
+            />}
+        </TouchableOpacity>
+      );
     }
     let indicator;
     if (this.props.showIndicator) {
@@ -121,6 +186,7 @@ class CalendarHeader extends Component {
     return (
       <View>
         <View style={this.style.header}>
+          {leftDoubleArrow}
           {leftArrow}
           <View style={{ flexDirection: 'row' }}>
             <Text allowFontScaling={false} style={this.style.monthText} accessibilityTraits='header'>
@@ -129,6 +195,7 @@ class CalendarHeader extends Component {
             {indicator}
           </View>
           {rightArrow}
+          {rightDoubleArrow}
         </View>
         {
           !this.props.hideDayNames &&
